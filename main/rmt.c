@@ -85,19 +85,9 @@ void recvIR(void* param){
 	vTaskDelete(NULL);
 }
 
-
-
-void sendIR(irproto brand, uint32_t code, uint8_t bits) {
-
-	irTX = 1;
-	for(;;){
-		if(irRX == 0){break;}
-		vTaskDelay( 2 / portTICK_PERIOD_MS );
-	}
-
-	sendir_t codetx = {brand, code, bits};
-
-	rmt_channel_handle_t tx_channel = NULL;
+rmt_channel_handle_t tx_channel = NULL;
+rmt_encoder_handle_t encoder_handle = NULL;
+void sendIR_init() {
 	
 	rmt_tx_channel_config_t txconf = {
 		.gpio_num = irTxPin,
@@ -111,14 +101,10 @@ void sendIR(irproto brand, uint32_t code, uint8_t bits) {
 		return;
 	}
 	float duty = 0.50;
-	//uint8_t rptgap = 100; //if(brand == SONY){rptgap = 24; duty = 0.40;}
 	
 	rmt_carrier_config_t carrier_cfg = {
-		.frequency_hz = proto[brand].frequency,
+		.frequency_hz = proto[NEC].frequency,
 		.duty_cycle = duty,
-		//.flags = {
-		//	.polarity_active_low = 0
-		//}
 	};
 	
 	rmt_apply_carrier(tx_channel, &carrier_cfg);
@@ -131,23 +117,22 @@ void sendIR(irproto brand, uint32_t code, uint8_t bits) {
 	rmt_copy_encoder_config_t copy_encoder_config = {};
 	rmt_new_copy_encoder(&copy_encoder_config, &ir_encoder->copy_encoder);
 
-	rmt_encoder_handle_t encoder_handle = &ir_encoder->base;
+	encoder_handle = &ir_encoder->base;
 
+}
+
+void sendIR(irproto brand, uint32_t code, uint8_t bits) {
+
+	sendir_t codetx = {brand, code, bits};
 	rmt_enable(tx_channel);
-
 	rmt_transmit_config_t tx_config = {
 		.loop_count = 0,
-		//.flags = {
-		//	.eot_level = 0
-		//}
 	};
 	rmt_transmit(tx_channel, encoder_handle, &codetx, sizeof(codetx), &tx_config);
 	rmt_tx_wait_all_done(tx_channel, portMAX_DELAY);	
-	
 	rmt_disable(tx_channel);
-	rmt_del_channel(tx_channel);
-	rmt_del_encoder(encoder_handle);
-	irTX = 0;
+	//rmt_del_channel(tx_channel);
+	//rmt_del_encoder(encoder_handle);
 }
 
 

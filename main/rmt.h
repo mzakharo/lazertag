@@ -44,7 +44,7 @@ typedef struct {
 } ir_protocol_t;
 
 extern const ir_protocol_t proto[PROTO_COUNT];
-
+void sendIR_init();
 extern void irReceived(irproto brand, uint32_t code, size_t len, rmt_symbol_word_t *item);
 void sendIR(irproto brand, uint32_t code, uint8_t bits);
 
