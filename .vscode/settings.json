@@ -1,0 +1,16 @@
+{
+    "C_Cpp.intelliSenseEngine": "default",
+    "idf.espIdfPathWin": "C:\\Users\\user\\esp-idf",
+    "idf.openOcdConfigs": [
+        "board/esp32-wrover-kit-3.3v.cfg"
+    ],
+    "idf.portWin": "COM16",
+    "idf.toolsPathWin": "C:\\Users\\user\\.espressif",
+    "files.associations": {
+        "rmt.h": "c",
+        "stdio.h": "c",
+        "random": "cpp",
+        "task.h": "c",
+        "iot_button.h": "c"
+    }
+}
